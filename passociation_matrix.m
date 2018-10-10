@@ -16,8 +16,15 @@ else
   return
 end
 
+% Delete rows if the sum is 0
+sum0 = logical(sum(A,2));
+A = A(sum0,:);
+X = X(sum0,:);
+n = size(X,1); % Update n
+
 % The association matrix
 Z = zeros(n,n);
+
 for i = 1: n
   Arow = repmat(A(i,:),n,1);            % For each row, compared to all rows in X
   AndX = Arow & X;                      % Which entries are both 1
@@ -29,7 +36,6 @@ Z(Z<tau) = 0;                           % Binarise according to tau
 % Finding replicates. *************************
 % ********************** Can possibly be done more elegantly
 Z = logical(Z);
-figure(10), subplot(1,2,1), imagesc(Z)
 Zdiff = false(n,n);
 for i = 1: n
   Zcol = repmat(Z(:,i),1,n);
@@ -44,5 +50,5 @@ Zeq = Zeq & UpTr;
 
 Z(:,col) = [];                          % Delete replicates
 
-figure(1), imagesc(Z)
+% figure(4), imagesc(Z)
 
