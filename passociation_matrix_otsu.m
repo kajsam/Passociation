@@ -1,18 +1,18 @@
-function [Z, thresh] = passociation_matrix_otsu(X, A, smooth)
+function [Z, thresh] = passociation_matrix_otsu(X, A, smooth, fig_nr)
 
 % Input:    X - binary gene expression matrix
 %           A - binary structure matrix approximation
-%           tau - threshold, scalar
+%           smooth - option for smoothin, not a good idea after all
 
 n = size(X,1);
 
 if islogical(X) && islogical(A)
   if ~all(size(X)==size(A))
-    'Wrong dimensions'
+    disp('Wrong dimensions')
     return
   end
 else
-  'Binary, please'
+  disp('Logical, please')
   return
 end
 
@@ -33,6 +33,10 @@ if smooth
   Z(logical(eye(size(Z)))) = 1;
 end
 
+if fig_nr
+  figure(fig_nr), subplot(1,2,1), imagesc(Z), colormap(gray)
+end 
+
 num_bin = floor(n/10);
 thresh = zeros(1,n);
 for i = 1: n
@@ -44,12 +48,12 @@ end
 
 Z = logical(Z);
 
-% figure, imagesc(Z), colormap(gray), title(median(thresh))
-
+if fig_nr  
+  figure(fig_nr), subplot(1,2,2), imagesc(Z), colormap(gray), title(median(thresh))
+end
 % Finding replicates. *************************
 % ********************** Can possibly be done more elegantly
 % *** Faster for sure
-
 
 Zdiff = false(n,n);
 for i = 1: n
