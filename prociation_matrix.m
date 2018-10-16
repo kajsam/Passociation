@@ -2,17 +2,16 @@ function [Z, thresh, em] = prociation_matrix(X, A, cell_effect)
 
 % Input:    X - binary gene expression matrix
 %           A - binary structure matrix approximation
-%           tau - threshold, scalar
 
 n = size(X,1);
 
 if islogical(X) && islogical(A)
   if ~all(size(X)==size(A))
-    'Wrong dimensions'
+    disp('Wrong dimensions')
     return
   end
 else
-  'Binary, please'
+  disp('Binary, please')
   return
 end
 
