@@ -17,6 +17,8 @@ else
 end
 
 Au = unique(A, 'rows', 'stable'); % Finding replicates. 
+sum0 = logical(sum(Au,2));                   % Column of all zeros
+Au = Au(sum0,:);
 nu = size(Au,1);
 
 % The association matrix
@@ -31,11 +33,11 @@ end
 
 Cell = repmat(cell_effect,1,nu);
 
-figure(fig_nr), subplot(1,3,1), imagesc(Z), colormap(gray)
-subplot(1,3,3), imagesc(Cell), colormap(gray)
+figure(fig_nr), subplot(1,3,1), imagesc(Z), colormap(gray), title('Association matrix')
+subplot(1,3,3), imagesc(Cell), colormap(gray), title('Cell effect')
 
 Z = Z - Cell;
-subplot(1,3,2), imagesc(Z), colormap(gray)
+subplot(1,3,2), imagesc(Z), colormap(gray), title('Cell-adjusted association')
 
 thresh = zeros(1,nu);
 for i = 1: nu
@@ -48,5 +50,7 @@ end
 Z = logical(Z);
 Z = unique(Z', 'rows', 'stable'); % Finding replicates. 
 Z = Z';
-figure(fig_nr+1), imagesc(Z), colormap(gray)
+figure(fig_nr+1), imagesc(Z), colormap(gray), 
+title(strcat(num2str(size(Z,2)), ' candidate columns'))
 
+figure(fig_nr), subplot(1,3,1)
