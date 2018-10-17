@@ -25,10 +25,12 @@ alpha = alphabeta(1,:);
 beta = alphabeta(2,:);
 
 % The probability/likelihood matrix
+
+% This is obviously not what I want!
 Z = zeros(n,n);
 for i = 1: n
   for ii = 1: n  % Compare column i in X to column ii in Pi
-    n00 = sum(~X(i,:) & ~ A(ii,:));
+    n00 = sum(~X(i,:) & ~A(ii,:));
     n01 =sum(~X(i,:) & A(ii,:));
     n10 = sum(X(i,:) & ~A(ii,:));
     n11 = sum(X(i,:) & A(ii,:));
