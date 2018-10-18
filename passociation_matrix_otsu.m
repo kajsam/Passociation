@@ -4,7 +4,7 @@ function [Z, thresh] = passociation_matrix_otsu(X, A, smooth, fig_nr)
 %           A - binary structure matrix approximation
 %           smooth - option for smoothin, not a good idea after all
 
-n = size(X,1);
+[n,d] = size(X);
 
 if islogical(X) && islogical(A)
   if ~all(size(X)==size(A))
@@ -18,15 +18,19 @@ end
 
 % The association matrix
 Z = zeros(n,n);
+AndX = zeros(n,d);
 for i = 1: n
-  Arow = repmat(A(i,:),n,1);            % For each row, compared to all rows in X
-  AndX = Arow & X;                      % Which entries are both 1
+  for j = 1 :n
+    AndX(j,:) = X(j,:)& A(i,:);
+  end
+  % Arow = repmat(A(i,:),n,1);            % For each row, compared to all rows in X
+  % AndX = Arow & X;                      % Which entries are both 1
   sumA = sum(A(i,:));
   sumA = max(sumA,1);                   % In case sumA = 0
   Z(:,i) = sum(AndX,2)./sumA;    % Sum up row-wise, normalised by the total number of 1's in the row 
 end
 
-if smooth
+if smooth % Do not use this
   smoothZ = Z;
   smoothZ(logical(eye(size(Z)))) = NaN;
   Z = smoothdata(smoothZ,2,'movmedian',3);
@@ -51,21 +55,6 @@ Z = logical(Z);
 if fig_nr  
   figure(fig_nr), subplot(1,2,2), imagesc(Z), colormap(gray), title(median(thresh))
 end
-% Finding replicates. *************************
-% ********************** Can possibly be done more elegantly
-% *** Faster for sure
-
-Zdiff = false(n,n);
-for i = 1: n
-  Zcol = repmat(Z(:,i),1,n);
-  Zxor = xor(Zcol,Z);
-  Zdiff(i,:) = logical(sum(Zxor,1));
-end
-
-Zeq = ~Zdiff;
-UpTr = triu(Zeq,1);
-Zeq = Zeq & UpTr;
-[~,col] = find(Zeq);
-
-Z(:,unique(col)) = [];                          % Delete replicates
+Z = unique(Z', 'rows', 'stable'); % Finding replicates. 
+Z = Z';
 
