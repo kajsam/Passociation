@@ -1,4 +1,4 @@
-function [binZ, thresh] = association_matrix_otsu(X, fig_nr)
+function [binZ, thresh] = association_matrix_otsu(X, min_class, fig_nr)
 
 % Input:    X - binary gene expression matrix
 
@@ -19,9 +19,10 @@ for i = 1: n                        % For each row, compare to all other rows
   sumX = sum(X(i,:));
   sumX = max(sumX,1);               % In case sum = 0
   Z(:,i) = XnX./sumX;        % Sum up row-wise, normalised by the total number of 1's in the row 
+  i
 end
 
-Z(logical(eye(n))) = median(Z(:));
+% Z(logical(eye(n))) = median(Z(:));
 if fig_nr
   figure(fig_nr), subplot(1,2,1), imagesc(Z), colormap(gray)
   title('Association matrix')
@@ -44,9 +45,14 @@ end
 binZ = unique(binZ', 'rows', 'stable'); % Finding replicates. 
 binZ = binZ';
 
+sumZ = sum(binZ,1);
+
+idx0 = sumZ < min_class;    % Smaller than the smallest class size
+binZ(:,idx0) = [];          % Noise, delete it
+
 if fig_nr  
   figure(fig_nr), subplot(1,2,2), imagesc(binZ) 
-  colormap(gray), title(median(thresh))
+  colormap(gray), title(median(thresh)), drawnow
 end
 
 
